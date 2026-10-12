@@ -1,0 +1,35 @@
+{
+  "name": "mcd-destiny",
+  "version": "1.0.0",
+  "description": "命运麦当劳 — 治好你的麦当劳选择困难。结合预算、口味、今日活动与优惠券，一键甩给你今天的天选套餐。基于麦当劳 MCP。",
+  "type": "module",
+  "bin": {
+    "mcd-destiny": "./bin/mcd-destiny.js"
+  },
+  "scripts": {
+    "start": "node bin/mcd-destiny.js",
+    "destiny": "node bin/mcd-destiny.js destiny",
+    "save": "node bin/mcd-destiny.js save",
+    "points": "node bin/mcd-destiny.js points"
+  },
+  "keywords": [
+    "mcdonalds",
+    "mcp",
+    "cli",
+    "decision",
+    "random",
+    "destiny",
+    "mcd-destiny"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "@inquirer/prompts": "^5.3.8",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1"
+  }
+}
