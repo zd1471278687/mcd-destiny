@@ -190,7 +190,9 @@ mcd-destiny/
 │       └── coupons.js       # 领券助手
 ├── mcp-config.example.json  # 脱敏 MCP 配置示例（仅环境变量占位符）
 ├── .env.example             # Token 配置模板
+├── SKILL.md                 # Skill 工作流定义（能力、工具链、护栏）
 ├── MCP_INTEGRATION.md       # 实际使用的 MCP Server / Tool / 调用流程说明
+├── workbuddy.md             # WorkBuddy 开发/使用上下文
 └── CONTEST_DECLARATION.md   # 参赛声明（内容不可修改）
 ```
 
