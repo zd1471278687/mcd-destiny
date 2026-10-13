@@ -23,19 +23,21 @@
   命运已经替你选好了，别再纠结了。
 ```
 
-不满意？`--reroll` 让命运再掷一次骰子。
+不满意？让命运再掷一次骰子就行。
 
-真实运行效果（连接麦当劳 MCP 的实时门店与菜单数据）——命运给你三套算好价的方案，到手价最低的标 ⭐推荐，正在促销的商品带 ⚡ 与划线原价：
-
-<p align="center">
-  <img src="./images/image1.png" alt="命运麦当劳 destiny 多方案对比运行效果" width="620" />
-</p>
-
-每套方案都会实时比遍可用券、给出用券到手价（下图 🙂 平手气）：
+它同时有**网页版**和**命令行版**，共用同一套决策逻辑。网页版长这样（粗黑描边卡牌风，抽签带揭晓动画，大吉还会撒花）：
 
 <p align="center">
-  <img src="./images/image2.png" alt="命运麦当劳 destiny 用券到手价对比" width="620" />
+  <img src="./images/image1.png" alt="命运麦当劳 Web 首页" width="420" />
 </p>
+
+一键抽签后，**三套算好价的方案并排对比**——到手价最低的标 ⭐推荐（金黄卡），正在促销的商品带 ⚡ 与划线原价，每套都实时比遍可用券给出用券到手价：
+
+<p align="center">
+  <img src="./images/image2.png" alt="命运麦当劳 Web 三方案对比结果" width="440" />
+</p>
+
+> 命令行版同样好用：`node bin/mcd-destiny.js --city 上海 --keyword 陆家嘴`，终端里也有 ASCII 标题、运势卡片与三方案对比。
 
 ---
 
@@ -43,16 +45,18 @@
 
 同一天、同样的口味和地点，`mcd-destiny` 给你的结果是**稳定的**——像每日运势一样。这背后是一个以"当天日期 + 你的输入"为种子的可复现随机算法（mulberry32），而不是每次刷新都变。这样它才有"今天就该吃这个"的仪式感，而不是让你陷入"再抽一次会不会更好"的新一轮纠结。
 
-想主动打破命运，就加 `--reroll`。
+想主动打破命运？网页版点「🎲 再抽一次」，命令行版加 `--reroll`，都会换用随机种子重新抽一套。
 
 ---
 
-## 命令一览
+## 命令行命令一览
+
+> 想在浏览器里用（含抽签动画、分享卡片、运势网格），直接看下面的 [Web 版](#web-版浏览器里用可生成分享卡片) 一节。以下是命令行（CLI）命令：
 
 | 命令 | 作用 |
 |---|---|
 | `mcd-destiny`（默认） | **今日天选套餐**：帮你决定今天吃什么，并给出最省点法 |
-| `mcd-destiny fortune` | **运势周历**：一次抽好今天/明天/后天三天的天选套餐，像翻日历一样提前安排 |
+| `mcd-destiny fortune` | **运势周历**：一次抽好未来七天的天选套餐，像翻日历一样提前安排 |
 | `mcd-destiny save` | 省钱助手：手动选商品，比遍当前门店所有可用券，找最省的点法 |
 | `mcd-destiny points` | 积分管家：积分余额与过期提醒、积分商城可兑换（标注够不够换）、活动日历 |
 | `mcd-destiny coupons` | 领券助手：看可领券、一键领券、查卡包 |
@@ -114,19 +118,21 @@ node bin/mcd-destiny.js --city 上海 --keyword 陆家嘴 --reroll
 - `--reroll` 不按当天固定结果，重新抽
 - `--city` / `--keyword` 跳过交互直接定位门店
 
-### 运势周历：一次看好三天
+### 运势周历：一次看好未来七天
 
 ```bash
 node bin/mcd-destiny.js fortune --city 上海 --keyword 陆家嘴 --taste beef
 ```
 
-一次性给出今天 / 明天 / 后天各一套天选套餐，每天带独立的"手气"等级（🌟大吉 / ✨中吉 / 🍀小吉 / 🙂平 / 🌧待努力），结果按当天日期固定：
+一次性给出未来七天各一套天选套餐，每天带独立的"手气"等级（🌟大吉 / ✨中吉 / 🍀小吉 / 🙂平 / 🌧待努力），结果按当天日期固定。
+
+上面是命令行用法；同一功能在**网页版**里呈现为下面这张一周网格（功能相同，只是形态不同）：
 
 <p align="center">
-  <img src="./images/image3.png" alt="命运麦当劳 fortune 三天运势周历运行效果" width="520" />
+  <img src="./images/image3.png" alt="命运麦当劳运势周历 · 未来七天网格（网页版）" width="440" />
 </p>
 
-> 今天那套会实时算价，明/后天用菜单参考价（避免过度调用、也更贴近"预告"的定位）。
+> 今天那套会实时算价，其余日期用菜单参考价（约¥）——因为 MCP 没有"查未来某天菜单"的能力，越往后越可能变动，故只作预告参考。
 
 ### 想自己抠到最省
 
@@ -139,6 +145,28 @@ node bin/mcd-destiny.js save --city 上海 --keyword 陆家嘴
 ```bash
 node bin/mcd-destiny.js points
 ```
+
+---
+
+## Web 版（浏览器里用，可生成分享卡片）
+
+除了命令行，`mcd-destiny` 还带一个**零第三方依赖**的 Web 版（后端仅用 Node 内置模块）。它把三套方案做成可并排对比的卡片，并支持**一键生成竖版分享卡片**（Canvas 绘制，适合发朋友圈/群）。
+
+```bash
+# 配好 .env（含真实 Token）后，实时数据模式
+npm run web
+# 浏览器打开 http://localhost:8788
+
+# 没有 Token 也能跑通演示（用内置脱敏快照数据）
+npm run web:demo
+```
+
+- **Token 只在后端**：前端永远拿不到 Token，不会泄露。
+- **无 Token 可演示**：未配置 Token 或实时调用失败时，自动回退 `data/mcd-snapshot.json` 快照，页面右上角会标明当前是「实时数据」还是「演示数据」，方便评审零门槛体验。
+- 两个标签页：**今日天选**（三套方案对比 + 🎲再抽一次 + 📸分享卡片）与**运势周历**（未来七天一周网格）。
+- **抽签有仪式感**：点击后有骰子翻滚的揭晓动画，结果卡片依次登场，抽到 🌟大吉 还会撒花（尊重系统「减少动态效果」偏好，会自动降级）。
+
+> 命令行与 Web 共享 `src/core.js` 里的同一套决策逻辑（门店/菜单/三方案/比价/运势），不是两套实现。
 
 ---
 
@@ -178,13 +206,20 @@ node bin/mcd-destiny.js points
 ```
 mcd-destiny/
 ├── bin/mcd-destiny.js       # CLI 入口（destiny 为默认命令）
+├── server.js                # Web 后端（零第三方依赖，Node 内置 http）
+├── public/                  # Web 前端单页（原生 HTML/CSS/JS + Canvas 分享卡片）
+│   ├── index.html
+│   ├── css/style.css
+│   └── js/app.js
+├── data/mcd-snapshot.json   # 脱敏数据快照（无 Token 时离线演示用）
 ├── src/
+│   ├── core.js              # 核心决策逻辑（无 UI 依赖，CLI 与 Web 共用）
 │   ├── config.js            # 读取 .env / 环境变量里的 MCP Token
 │   ├── mcpClient.js         # 轻量 MCP 客户端（Streamable HTTP + JSON/SSE/文本解析）
-│   ├── format.js            # 价格换算、字段容错提取、输出样式
+│   ├── format.js            # 终端输出样式与视觉组件
 │   └── commands/
-│       ├── destiny.js       # 【主命令】今日天选套餐：决策 + 可复现随机 + 比价
-│       ├── fortune.js       # 运势周历：连抽今/明/后三天
+│       ├── destiny.js       # 【CLI 主命令】今日天选套餐：决策 + 可复现随机 + 比价
+│       ├── fortune.js       # 运势周历：连抽未来七天
 │       ├── save.js          # 省钱助手
 │       ├── points.js        # 积分管家
 │       └── coupons.js       # 领券助手

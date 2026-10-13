@@ -1,0 +1,51 @@
+{
+  "_note": "麦当劳 MCP 数据结构快照（脱敏示例，仅用于无 Token 时的离线演示）。字段结构与 query-nearby-stores / query-meals / query-store-coupons 真实返回一致；菜品名与价格为示意数据，实际以麦当劳官方实时结果为准。不含任何真实 Token 或个人信息。",
+  "store": {
+    "success": true,
+    "code": 200,
+    "data": [
+      {
+        "storeCode": "1450127",
+        "storeName": "麦当劳（示例·陆家嘴餐厅）",
+        "address": "示例地址·世纪大道（演示数据）",
+        "businessStatus": true,
+        "distance": 120
+      }
+    ]
+  },
+  "meals": {
+    "success": true,
+    "code": 200,
+    "data": {
+      "categories": [
+        { "name": "汉堡", "meals": [{ "code": "DEMO-BURGER-01", "tags": [] }] }
+      ],
+      "meals": {
+        "DEMO-BURGER-01": { "name": "龙焰鸡腿堡", "currentPrice": "27.5", "originalPrice": "32.0", "discountInfos": "促销优惠", "productType": 1 },
+        "DEMO-BURGER-02": { "name": "巨无霸", "currentPrice": "24.0", "originalPrice": "24.0", "discountInfos": null, "productType": 1 },
+        "DEMO-BURGER-03": { "name": "麦辣鸡腿堡", "currentPrice": "21.0", "originalPrice": "21.0", "discountInfos": null, "productType": 1 },
+        "DEMO-BURGER-04": { "name": "麦香鱼", "currentPrice": "18.0", "originalPrice": "18.0", "discountInfos": null, "productType": 1 },
+        "DEMO-BURGER-05": { "name": "安格斯厚牛堡", "currentPrice": "33.0", "originalPrice": "33.0", "discountInfos": null, "productType": 1 },
+        "DEMO-CHICKEN-01": { "name": "麦乐鸡（5块）", "currentPrice": "13.0", "originalPrice": "13.0", "discountInfos": null, "productType": 1 },
+        "DEMO-CHICKEN-02": { "name": "麦辣鸡翅（2块）", "currentPrice": "11.5", "originalPrice": "16.9", "discountInfos": "促销优惠", "productType": 1 },
+        "DEMO-SIDE-01": { "name": "中薯条", "currentPrice": "11.0", "originalPrice": "11.0", "discountInfos": null, "productType": 1 },
+        "DEMO-SIDE-02": { "name": "小薯条", "currentPrice": "9.0", "originalPrice": "9.0", "discountInfos": null, "productType": 1 },
+        "DEMO-SIDE-03": { "name": "苹果片", "currentPrice": "7.5", "originalPrice": "7.5", "discountInfos": null, "productType": 1 },
+        "DEMO-DRINK-01": { "name": "中可乐", "currentPrice": "8.0", "originalPrice": "8.0", "discountInfos": null, "productType": 1 },
+        "DEMO-DRINK-02": { "name": "鲜萃咖啡", "currentPrice": "9.5", "originalPrice": "9.5", "discountInfos": null, "productType": 1 },
+        "DEMO-DRINK-03": { "name": "麦咖啡拿铁", "currentPrice": "9.9", "originalPrice": "27.0", "discountInfos": "促销优惠", "productType": 1 },
+        "DEMO-DESSERT-01": { "name": "圆筒冰淇淋", "currentPrice": "5.0", "originalPrice": "7.0", "discountInfos": "促销优惠", "productType": 1 },
+        "DEMO-DESSERT-02": { "name": "香芋派", "currentPrice": "6.9", "originalPrice": "6.9", "discountInfos": null, "productType": 1 }
+      }
+    }
+  },
+  "coupons": {
+    "success": true,
+    "code": 200,
+    "data": [
+      { "couponId": "DEMO-CP-01", "couponName": "示例·汉堡立减5元券" },
+      { "couponId": "DEMO-CP-02", "couponName": "示例·满30减4券" }
+    ]
+  },
+  "calendar": "### 活动列表：\n- **活动标题**：示例·麦麦省周一领券（演示数据）\n"
+}

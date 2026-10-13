@@ -1,6 +1,6 @@
 ---
 name: mcd-destiny
-description: 麦当劳「命运麦当劳」决策 Skill。治好点餐选择困难——结合预算、口味、门店营业状态与优惠券，用官方 query-nearby-stores / query-meals / query-store-coupons / calculate-price 真实数据，一次给出「尝鲜新品 / 经典之选 / 轻享低价」三套已算好价的方案，到手价最低的自动标推荐、正在促销的商品带划线原价；还能连抽今明后三天的运势周历。适用于"今天吃什么""帮我选个麦当劳套餐""点什么最划算""选择困难""随便给我推荐一顿"等需求。
+description: 麦当劳「命运麦当劳」决策 Skill。治好点餐选择困难——结合预算、口味、门店营业状态与优惠券，用官方 query-nearby-stores / query-meals / query-store-coupons / calculate-price 真实数据，一次给出「尝鲜新品 / 经典之选 / 轻享低价」三套已算好价的方案，到手价最低的自动标推荐、正在促销的商品带划线原价；还能连抽未来七天的运势周历。适用于"今天吃什么""帮我选个麦当劳套餐""点什么最划算""选择困难""随便给我推荐一顿"等需求。
 ---
 
 # 命运麦当劳 / mcd-destiny
@@ -11,7 +11,7 @@ description: 麦当劳「命运麦当劳」决策 Skill。治好点餐选择困�
 
 - 用户说：今天吃什么、帮我决定、随便推荐一顿、选择困难、懒得挑
 - 用户说：点什么最划算、这几样怎么点最省、有没有在打折的
-- 用户想要点餐有点仪式感/趣味：给我抽一套、今天手气如何、把这三天的都安排好
+- 用户想要点餐有点仪式感/趣味：给我抽一套、今天手气如何、把这一周的都安排好
 
 ## 前置条件
 
@@ -76,7 +76,7 @@ calculate-price(items + 每张券)        → 逐张到手价，取最省
 
 ## 其他命令
 
-- `fortune`：运势周历，一次抽今 / 明 / 后三天各一套，今天实时算价、明后用菜单参考价（控制请求频率）。
+- `fortune`：运势周历，一次抽未来七天各一套，今天实时算价、其余用菜单参考价（控制请求频率）。
 - `save`：手动选商品，比遍当前门店所有可用券找最省点法。
 - `points`：积分余额与过期提醒、积分商城可兑换（标注够不够换）、活动日历。
 - `coupons`：查看可领券、一键领券、查卡包。
@@ -113,5 +113,9 @@ calculate-price(items + 每张券)        → 逐张到手价，取最省
 | `workbuddy.md` | WorkBuddy 开发/使用上下文 |
 | `mcp-config.example.json` | 配置示例（仅环境变量占位符） |
 | `bin/mcd-destiny.js` | CLI 入口（destiny 为默认命令） |
+| `server.js` | Web 后端（零依赖；`npm run web` 启动） |
+| `public/` | Web 前端单页 + Canvas 分享卡片 |
+| `data/mcd-snapshot.json` | 脱敏数据快照（无 Token 离线演示） |
+| `src/core.js` | 核心决策逻辑（CLI 与 Web 共用） |
 | `src/mcpClient.js` | MCP Streamable HTTP 客户端 |
 | `src/commands/*.js` | destiny / fortune / save / points / coupons 各命令实现 |

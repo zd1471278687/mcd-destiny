@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>命运麦当劳 · 治好你的麦当劳选择困难</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="logo">M<span class="logo-c">C</span>D</div>
+    <div class="logo-sub">DESTINY · 命运麦当劳</div>
+    <p class="tagline">治好你的麦当劳选择困难。你只管吃，选什么交给命运。</p>
+    <div id="modeBadge" class="badge" hidden></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="destiny">🔮 今日天选</button>
+    <button class="tab" data-tab="fortune">🗓 运势周历</button>
+  </nav>
+
+  <main class="container">
+    <!-- 输入表单 -->
+    <form id="form" class="card form">
+      <div class="row">
+        <label>城市
+          <input type="text" id="city" placeholder="如：上海" value="上海" />
+        </label>
+        <label>位置关键词
+          <input type="text" id="keyword" placeholder="如：陆家嘴" value="陆家嘴" />
+        </label>
+      </div>
+      <div class="row">
+        <label>口味路线
+          <select id="taste">
+            <option value="any">随便，全凭天意</option>
+            <option value="chicken">鸡肉控</option>
+            <option value="beef">牛肉汉堡党</option>
+            <option value="fish">鱼堡/清淡</option>
+            <option value="veggie">素食/沙拉</option>
+          </select>
+        </label>
+        <label>预算上限（元）
+          <input type="number" id="budget" placeholder="不限则留空" min="1" value="40" />
+        </label>
+      </div>
+      <button type="submit" id="submitBtn" class="btn-primary">
+        <span id="btnText">🎲 抽我的今日天选</span>
+      </button>
+    </form>
+
+    <!-- 抽签动画层：等待后端返回时播放 -->
+    <div id="rolling" class="rolling" hidden>
+      <div class="dice">🍔</div>
+      <div id="rollingText" class="rolling-text">正在叩问今日命运…</div>
+    </div>
+
+    <div id="status" class="status" hidden></div>
+
+    <!-- 大吉撒花层 -->
+    <canvas id="confetti" class="confetti" hidden></canvas>
+
+    <!-- 结果区 -->
+    <section id="result" hidden></section>
+  </main>
+
+  <footer class="foot">
+    <p>基于麦当劳 MCP · 价格与供应以官方实时结果为准 · 非麦当劳官方产品</p>
+  </footer>
+
+  <!-- 分享卡片用的离屏 canvas -->
+  <canvas id="shareCanvas" width="720" height="1280" hidden></canvas>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>

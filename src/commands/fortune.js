@@ -1,14 +1,15 @@
 /**
- * 麦当劳运势周历（fortune 命令）—— “连抽三天”玩法
+ * 麦当劳运势周历（fortune 命令）—— “未来七天”玩法
  *
- * 一次性给出今天 / 明天 / 后天各一套【天选套餐】+ 运势等级，
- * 像翻日历一样提前把这三天的麦当劳安排好。
+ * 一次性给出未来七天各一套【天选套餐】+ 运势等级，
+ * 像翻日历一样提前把这一周的麦当劳安排好。
  *
  * 复用 destiny 的核心逻辑（门店、菜单、口味/预算过滤、可复现随机），
- * 不同之处：用「每一天的日期」作种子，三天结果各自固定、互不相同。
+ * 不同之处：用「每一天的日期」作种子，七天结果各自固定、互不相同。
  *
  * 为了省请求（MCP 限流 600/分钟），门店与菜单只查一次，
- * 价格只对“今天”那套做一次实时计算作为参考，明/后天展示菜单参考价。
+ * 价格只对“今天”那套做一次实时计算，其余日期展示菜单参考价（约¥）——
+ * 因为 MCP 没有"查未来某天菜单"的能力，越往后参考价越可能变动。
  */
 import { select, input } from '@inquirer/prompts';
 import ora from 'ora';
@@ -23,6 +24,7 @@ import {
   unwrap,
   safeString,
   fenToYuan,
+  padEndWidth,
 } from '../format.js';
 import {
   flattenProducts,
@@ -38,12 +40,12 @@ const DAY_LABELS = ['今天', '明天', '后天'];
 
 export async function runFortune(client, opts = {}) {
   console.log(banner());
-  console.log(ui.dim('\n🗓  麦当劳运势周历 · 一次看好这三天吃什么\n'));
+  console.log(ui.dim('\n🗓  麦当劳运势周历 · 一次看好未来七天吃什么\n'));
 
   const taste =
     opts.taste ||
     (await select({
-      message: '这三天的口味路线？',
+      message: '这一周的口味路线？',
       choices: [
         { name: '随便，全凭天意', value: 'any' },
         { name: '鸡肉控', value: 'chicken' },
@@ -94,61 +96,65 @@ export async function runFortune(client, opts = {}) {
 
   const pool = filterPool(products, taste, budgetFen);
 
-  // 为今天那套算一次真实价格（作为参考），明/后天用菜单参考价
-  let todayRealTotal = null;
-
   console.log('\n' + ui.dim(`门店：${storeName}`));
   console.log('');
 
-  for (let i = 0; i < 3; i++) {
+  // 收集七天的紧凑行（七张完整卡片在终端太长，改为每天一两行）
+  const rows = [];
+  for (let i = 0; i < 7; i++) {
     const date = new Date();
     date.setDate(date.getDate() + i);
-    const seed = makeSeed(seedForDate(date), taste, storeCode);
-    const rng = mulberry32(seed);
+    const rng = mulberry32(makeSeed(seedForDate(date), taste, storeCode));
 
     const chosen = pickCombo(pool, products, budgetFen, rng);
     const luck = fortuneLevel(rng());
+    const dayLabel = DAY_LABELS[i] || `第${i + 1}天`;
+    const head = `${fmtDate(date)} ${WEEKDAYS[date.getDay()]} ${dayLabel}`;
 
-    const lines = [];
+    const luckLabel = `${luck.emoji} ${luck.name}`;
+
     if (!chosen.length) {
-      lines.push(ui.warn('这天按你的预算没凑出套餐，放宽点再试。'));
-    } else {
-      lines.push(ui.dim('手气：') + luck.color(luck.text));
-      lines.push('');
-      let refFen = 0;
-      let hasRef = true;
-      for (const p of chosen) {
-        lines.push('🍔 ' + ui.highlight(p.name) + (p.priceText ? ui.dim('  ¥' + p.priceText) : ''));
-        if (p.priceFen != null) refFen += p.priceFen;
-        else hasRef = false;
-      }
-      lines.push('');
-
-      if (i === 0) {
-        // 今天：实时算一次
-        const priced = await client
-          .callTool('calculate-price', {
-            ...baseArgs,
-            items: chosen.map((p) => ({ productCode: String(p.code), quantity: 1 })),
-          })
-          .catch(() => null);
-        todayRealTotal = extractTotal(priced);
-        if (todayRealTotal != null) {
-          lines.push(ui.label('实时价：') + ui.price(yuan(todayRealTotal)));
-        } else if (hasRef) {
-          lines.push(ui.label('菜单参考价：') + ui.price('¥' + fenToYuan(refFen).toFixed(2)));
-        }
-      } else if (hasRef) {
-        lines.push(ui.label('菜单参考价：') + ui.price('¥' + fenToYuan(refFen).toFixed(2)));
-      }
+      rows.push(
+        luck.color(padEndWidth(luckLabel, 10)) + ui.dim(padEndWidth(head, 20)) + ui.dim('（预算内没凑出套餐）')
+      );
+      continue;
     }
 
-    const dayTitle = `${DAY_LABELS[i]} · ${fmtDate(date)} ${WEEKDAYS[date.getDay()]}`;
-    console.log(card(dayTitle, lines, { color: luck.color }));
-    console.log('');
+    const combo = chosen.map((p) => p.name).join(' + ');
+    let refFen = 0;
+    let hasRef = true;
+    for (const p of chosen) {
+      if (p.priceFen != null) refFen += p.priceFen;
+      else hasRef = false;
+    }
+
+    let priceStr = '';
+    if (i === 0) {
+      const priced = await client
+        .callTool('calculate-price', {
+          ...baseArgs,
+          items: chosen.map((p) => ({ productCode: String(p.code), quantity: 1 })),
+        })
+        .catch(() => null);
+      const total = extractTotal(priced);
+      if (total != null) priceStr = ui.price('¥' + fenToYuan(total).toFixed(2)) + ui.dim('(实时)');
+      else if (hasRef) priceStr = ui.price('约¥' + fenToYuan(refFen).toFixed(2));
+    } else if (hasRef) {
+      priceStr = ui.dim('约¥' + fenToYuan(refFen).toFixed(2));
+    }
+
+    rows.push(
+      luck.color(padEndWidth(luckLabel, 10)) +
+        ui.dim(padEndWidth(head, 20)) +
+        ui.highlight(combo) +
+        '  ' +
+        priceStr
+    );
   }
 
-  console.log(ui.dim('三天的结果都按当天日期固定，像运势一样。明/后天为菜单参考价，'));
+  console.log(card('🗓 麦当劳运势周历 · 未来七天', rows, { color: (s) => ui.warn(s) }));
+  console.log('');
+  console.log(ui.dim('七天结果按当天日期固定，像运势一样。今天为实时价，其余为菜单参考价(约¥)，'));
   console.log(ui.dim('当天用 `mcd-destiny` 可查实时价与最省券。供应与价格以官方实时结果为准。'));
 }
 

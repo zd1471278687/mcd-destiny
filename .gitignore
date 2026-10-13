@@ -1,5 +1,7 @@
 node_modules/
 .env
+.env.bak
+.env.*.local
 package-lock.json
 *.log
 .DS_Store

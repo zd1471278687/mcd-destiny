@@ -77,7 +77,7 @@ program
 
 program
   .command('fortune')
-  .description('运势周历：一次抽好今天/明天/后天三天的天选套餐')
+  .description('运势周历：一次抽好未来七天的天选套餐')
   .option('--city <city>', '城市')
   .option('--keyword <keyword>', '位置关键词')
   .option('--taste <taste>', '口味偏好：any/chicken/beef/fish/veggie')

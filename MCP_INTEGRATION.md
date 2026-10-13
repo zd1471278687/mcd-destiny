@@ -23,7 +23,7 @@
 | `calculate-price` | destiny / save | 分别试算"不用券"与"用每张券"的到手价，用于比价 |
 | `campaign-calendar` | destiny / points | 查当月活动日历，destiny 用于点出"今天还有什么活动" |
 
-> `fortune`（运势周历）命令复用 destiny 的门店/菜单/过滤/随机逻辑，调用 `query-nearby-stores`、`query-meals` 各一次，只对"今天"那套调用一次 `calculate-price`，明/后天用菜单参考价，以控制请求频率（MCP 限流 600 次/分钟）。
+> `fortune`（运势周历）命令复用 destiny 的门店/菜单/过滤/随机逻辑，调用 `query-nearby-stores`、`query-meals` 各一次，只对"今天"那套调用一次 `calculate-price`，其余六天用菜单参考价（MCP 无"查未来某天菜单"能力），以控制请求频率（MCP 限流 600 次/分钟）。
 | `query-my-account` | points | 查可用积分、累计积分、将过期积分 |
 | `mall-points-products` | points | 查积分商城可兑换商品 |
 | `available-coupons` | coupons | 查麦麦省当前可领券 |
@@ -98,5 +98,11 @@ campaign-calendar()                    → 点出今天的活动
 npm install
 cp .env.example .env    # 填入真实 MCD_MCP_TOKEN
 node bin/mcd-destiny.js doctor    # 验证连接
-node bin/mcd-destiny.js           # 抽今日天选套餐
+node bin/mcd-destiny.js           # CLI：抽今日天选套餐
+
+# Web 版（同一套核心逻辑，src/core.js）
+npm run web        # 实时数据，http://localhost:8788
+npm run web:demo   # 无 Token 用快照数据跑通演示
 ```
+
+> CLI 与 Web 后端共用 `src/core.js` 的编排逻辑；Web 后端零第三方依赖，Token 仅在后端通过环境变量读取，不下发前端。未配置 Token 或实时调用失败时回退 `data/mcd-snapshot.json` 快照，响应用 `mode: "live"|"snapshot"` 标明来源。
